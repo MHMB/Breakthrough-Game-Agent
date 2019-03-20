@@ -28,5 +28,6 @@ def play(white, black, board):
 if __name__ == '__main__':
     board = Board(6, 6, 2)
     white = RandomMinimaxAgent('W', 'B')
+    #you = RandomMinimaxAgent('B', 'W')
     you = Agent('B', 'W')
     play(white, you, board)
