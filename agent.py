@@ -19,7 +19,6 @@ class Agent:
 
 class Node:
     def __init__(self, from_cell, to_here_cell, board, maximizer, alpha=-200, beta=200):
-        self.children = []
         self.from_cell = from_cell
         self.to_here_cell = to_here_cell
         self.decisionChild = None
@@ -62,13 +61,9 @@ class Node:
                 if self.board.board[pos[0]-dir][pos[1]] == 'E':
                     eval_value -= 1
         self.value = eval_value
-        #print('Eval Value: ', eval_value)
             
     def set_utility(self, utility):
         self.value = utility
-
-    def set_child(self, child):
-        self.children.append(child)
 
     def set_alpha(self, alpha):
         self.alpha = alpha
@@ -114,23 +109,19 @@ class Tree:
                     newBoard = copy.deepcopy(node.board)
                     newBoard.changePieceLocation(color, piecesFromCell[i], piecesToCell[i][j])
                     childNode = self.make_node(height, newBoard, not node.maximizer, node.alpha, node.beta, piecesFromCell[i], piecesToCell[i][j])
-                    node.set_child(childNode)
-                    if node.is_maximizer() and node.value < childNode.value or not node.is_maximizer() and node.value > childNode.value:
-                        self.expand_node(childNode, height-1, color, opponentColor)
-                        if node.is_maximizer() and node.value < childNode.value:
-                            if childNode.value > node.beta and node.beta != 200:
-                                node.value = node.beta
-                                return node.value
-                            node.set_utility(childNode.value)
-                            node.setDecisionChild(childNode)
-                            node.set_alpha(childNode.value)
-                        elif not(node.is_maximizer()) and node.value > childNode.value:
-                            if childNode.value < node.alpha and node.alpha != -200:
-                                node.value = node.alpha
-                                return node.value
-                            node.set_utility(childNode.value)
-                            node.setDecisionChild(childNode)
-                            node.set_beta(childNode.value)
-
-            #print('node value: ', node.value)
+                    self.expand_node(childNode, height-1, color, opponentColor)
+                    if node.is_maximizer() and node.value < childNode.value:
+                        if childNode.value > node.beta and node.beta != 200:
+                            node.value = node.beta
+                            return node.value
+                        node.set_utility(childNode.value)
+                        node.setDecisionChild(childNode)
+                        node.set_alpha(childNode.value)
+                    elif not(node.is_maximizer()) and node.value > childNode.value:
+                        if childNode.value < node.alpha and node.alpha != -200:
+                            node.value = node.alpha
+                            return node.value
+                        node.set_utility(childNode.value)
+                        node.setDecisionChild(childNode)
+                        node.set_beta(childNode.value)
             return node.value
